@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0d12" />
+  <meta name="description" content="설치 없이 즐기는 한국어 실시간 웹 마피아 게임" />
+  <title>흑야 — 한국어 웹 마피아</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <main>
+    <section id="landing" class="landing shell">
+      <header class="brand-row">
+        <a class="brand" href="/" aria-label="흑야 홈">
+          <span class="brand-mark">黑</span>
+          <span>흑야</span>
+        </a>
+        <span class="beta">BETA</span>
+      </header>
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">KOREAN SOCIAL DEDUCTION</p>
+          <h1>밤이 되었습니다.<br><span>누구도 믿지 마세요.</span></h1>
+          <p class="hero-description">설치와 회원가입 없이 방 코드를 공유해 바로 시작하는 한국어 실시간 마피아 게임입니다.</p>
+          <div class="feature-row">
+            <span>5–12명</span><span>모바일 지원</span><span>실시간 채팅</span>
+          </div>
+        </div>
+
+        <div class="entry-card glass">
+          <label for="nickname">닉네임</label>
+          <input id="nickname" maxlength="12" autocomplete="nickname" placeholder="2–12자" />
+          <button id="createRoom" class="primary">새 방 만들기</button>
+          <div class="divider"><span>또는</span></div>
+          <div class="join-row">
+            <input id="roomCode" maxlength="5" autocomplete="off" placeholder="방 코드" />
+            <button id="joinRoom" class="secondary">참가</button>
+          </div>
+          <p class="entry-note">초대 링크 대신 5자리 방 코드만 공유하면 됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="game" class="game shell hidden">
+      <header class="game-header glass">
+        <div class="brand compact"><span class="brand-mark">黑</span><span>흑야</span></div>
+        <div class="room-meta">
+          <span>방 코드</span>
+          <button id="copyCode" class="code-pill" title="방 코드 복사">-----</button>
+        </div>
+        <button id="leaveRoom" class="ghost">나가기</button>
+      </header>
+
+      <div class="status-card glass">
+        <div>
+          <p id="roundLabel" class="eyebrow">대기실</p>
+          <h2 id="phaseTitle">플레이어를 기다리는 중</h2>
+          <p id="phaseDescription">5명 이상 모이면 방장이 게임을 시작할 수 있습니다.</p>
+        </div>
+        <div id="timer" class="timer hidden">00:00</div>
+      </div>
+
+      <div class="game-grid">
+        <section class="panel glass players-panel">
+          <div class="panel-title">
+            <h3>플레이어</h3>
+            <span id="playerCount">0 / 12</span>
+          </div>
+          <div id="players" class="players"></div>
+          <button id="startGame" class="primary hidden">게임 시작</button>
+        </section>
+
+        <section class="panel glass center-panel">
+          <div id="roleCard" class="role-card hidden">
+            <p>나의 역할</p>
+            <h3 id="roleName">시민</h3>
+            <p id="roleDescription"></p>
+            <div id="teammates" class="teammates hidden"></div>
+          </div>
+
+          <div id="actionArea" class="action-area">
+            <div class="empty-state">
+              <div class="moon">◐</div>
+              <h3>게임이 시작되면 이곳에서 행동합니다.</h3>
+              <p>밤에는 능력 대상을, 낮에는 처형할 플레이어를 선택하세요.</p>
+            </div>
+          </div>
+
+          <div id="roleReveal" class="role-reveal hidden"></div>
+        </section>
+
+        <section class="panel glass chat-panel">
+          <div class="panel-title"><h3>채팅</h3><span id="chatStatus">대기실</span></div>
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" maxlength="240" placeholder="메시지 입력" autocomplete="off" />
+            <button class="send-button" aria-label="보내기">↑</button>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="toastContainer" class="toast-container" aria-live="assertive"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
