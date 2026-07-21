@@ -1,0 +1,39 @@
+name: Bootstrap Han Mafia
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Restore project snapshot
+        shell: bash
+        run: |
+          cat .bootstrap2/payload-* > /tmp/payload.b64
+          base64 --decode /tmp/payload.b64 > /tmp/han-mafia.tar.gz
+          echo "26587c9623bedd3b1a208e18caa97611b454c756be4418574f5b14abeae94904  /tmp/han-mafia.tar.gz" | sha256sum -c -
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          tar -xzf /tmp/han-mafia.tar.gz -C .
+
+      - name: Validate project
+        shell: bash
+        run: |
+          npm ci
+          npm test
+
+      - name: Commit project
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Build Korean web mafia MVP"
+          git push origin HEAD:main
