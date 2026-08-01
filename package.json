@@ -5,8 +5,8 @@
   "description": "설치 없이 즐기는 한국어 실시간 웹 마피아 게임",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
+    "start": "node server-main.js",
+    "dev": "node --watch server-main.js",
     "test": "node --test",
     "test:admin": "node server-test.js"
   },
