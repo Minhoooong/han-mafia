@@ -9,6 +9,9 @@
   let panel = null;
   let playerList = null;
   let statusText = null;
+  let reopenButton = null;
+  let enablePending = false;
+  let adminActive = false;
 
   window.io = (...args) => {
     const createdSocket = originalIo(...args);
@@ -33,6 +36,7 @@
     const style = document.createElement('style');
     style.textContent = `
       .beta.admin-trigger{cursor:pointer;border:1px solid rgba(124,92,255,.25);font:inherit}
+      .admin-reopen{position:fixed;z-index:199;right:18px;bottom:18px;width:46px;height:46px;border-radius:15px;color:#fff;background:#6c4fe4;border:1px solid rgba(255,255,255,.12);box-shadow:0 14px 40px rgba(0,0,0,.4);font-weight:900}
       .admin-drawer{position:fixed;z-index:200;right:18px;top:18px;width:min(390px,calc(100vw - 36px));max-height:calc(100vh - 36px);overflow:auto;padding:18px;border-radius:20px;background:rgba(11,14,21,.97);border:1px solid rgba(169,149,255,.32);box-shadow:0 28px 100px rgba(0,0,0,.58);backdrop-filter:blur(18px)}
       .admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.admin-head h2{margin:0;font-size:18px}.admin-head p{margin:5px 0 0;color:#9299a8;font-size:12px}.admin-close{width:34px;height:34px;border-radius:10px;color:#c9ced9;background:#202531;border:1px solid rgba(255,255,255,.08)}
       .admin-status{margin:14px 0;padding:10px 12px;border-radius:12px;background:rgba(124,92,255,.1);color:#c7bcff;font-size:12px}
@@ -64,6 +68,13 @@
       <div class="admin-players"></div>
     `;
     document.body.appendChild(panel);
+    reopenButton = document.createElement('button');
+    reopenButton.type = 'button';
+    reopenButton.className = 'admin-reopen hidden';
+    reopenButton.textContent = 'A';
+    reopenButton.title = '관리자 테스트 패널 열기';
+    reopenButton.addEventListener('click', () => { panel.classList.remove('hidden'); tryEnable(); });
+    document.body.appendChild(reopenButton);
     playerList = panel.querySelector('.admin-players');
     statusText = panel.querySelector('.admin-status');
     panel.querySelector('.admin-close').addEventListener('click', () => panel.classList.add('hidden'));
@@ -89,6 +100,8 @@
 
   function renderState(state) {
     createPanel();
+    adminActive = true;
+    reopenButton.classList.remove('hidden');
     statusText.textContent = `방 ${state.code} · ${state.phase} · ${state.round || 0}라운드${state.winner ? ` · ${state.winner} 승리` : ''}`;
     playerList.replaceChildren();
     for (const player of state.players) {
@@ -118,8 +131,10 @@
   }
 
   function tryEnable() {
-    if (!unlocked || !socket) return;
+    if (!unlocked || !socket || enablePending || adminActive) return;
+    enablePending = true;
     socket.emit('admin:enable', {}, (result) => {
+      enablePending = false;
       if (!result?.ok) {
         if (statusText) statusText.textContent = result?.error ?? '방장이 방을 만든 뒤 사용할 수 있습니다.';
         return;
@@ -151,6 +166,7 @@
     if (clickCount < 10) return;
     unlocked = true;
     sessionStorage.setItem('hanMafiaAdminUnlocked', '1');
+    if (reopenButton) reopenButton.classList.remove('hidden');
     clickCount = 0;
     createPanel();
     panel.classList.remove('hidden');
